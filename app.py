@@ -137,11 +137,16 @@ if not st.session_state.visitor_submitted:
 # ---------------------------------------------------------
 # 5. YAN PANEL VE LOGO
 # ---------------------------------------------------------
+# --- ESKİ KODU SİL, YERİNE BUNU YAPIŞTIR ---
 try:
-    secrets = toml.load(".streamlit/secrets.toml")
-    genai.configure(api_key=secrets["GOOGLE_API_KEY"])
+    # Streamlit Cloud'da şifreler st.secrets içinden okunur, dosya aranmaz.
+    if "GOOGLE_API_KEY" in st.secrets:
+        genai.configure(api_key=st.secrets["GOOGLE_API_KEY"])
+    else:
+        st.error("HATA: Streamlit Cloud ayarlarında GOOGLE_API_KEY bulunamadı!")
+        st.stop()
 except Exception as e:
-    st.error("API Anahtarı bulunamadı.")
+    st.error(f"API Bağlantı Hatası: {e}")
     st.stop()
 
 # CSS Tasarımı 
@@ -241,5 +246,7 @@ if prompt := st.chat_input("Sorunuzu buraya yazın..."):
                 message_placeholder.markdown(full_response + "▌")
             message_placeholder.markdown(full_response)
             st.session_state.messages.append({"role": "assistant", "content": full_response})
+        # --- EN ALTTAKİ HATA KISMINI BÖYLE GÜNCELLE ---
         except Exception as e:
-            message_placeholder.error("Bağlantı hatası. Lütfen tekrar deneyin.")
+            # "Bağlantı hatası" yerine gerçek hatayı yazdırıyoruz
+            st.error(f"YAPAY ZEKA HATASI: {e}")

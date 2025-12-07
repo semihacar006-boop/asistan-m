@@ -139,8 +139,12 @@ with st.sidebar:
         elif os.path.exists("unnamed.jpg"): st.image("unnamed.jpg", width=130)
     
     st.markdown("<h2 style='text-align: center;'>Semih ACAR</h2>", unsafe_allow_html=True)
-    st.info(f"📅 **Yaş:** {CURRENT_AGE}\n🎓 **Durum:** {EDU_STATUS.split('(')[0]}")
-    st.markdown("---")
+    st.markdown("<div class='profile-title'>Semih ACAR</div>", unsafe_allow_html=True)
+    st.markdown("<div class='profile-subtitle'>Elektrik-Elektronik Mühendisi<br>& Yazılım Geliştirici</div>", unsafe_allow_html=True)
+    
+    st.write("---")
+    # Dinamik bilgileri Sidebar'da da gösterelim
+    st.info(f"Teknik uzmanlığın ötesinde, stratejik karar alma ve ekip yönetimi konularında yetkin, vizyoner bir mühendis.")
     st.markdown("📧 [E-Posta Gönder](mailto:semihacar006@gmail.com)")
     st.markdown("🔗 [LinkedIn](http://linkedin.com/in/semih-acar-0606-sa)")
 
@@ -154,7 +158,7 @@ Kurallar: Yönetici potansiyelini vurgula. Maaş sorulursa direkt rakam verme, "
 """
 
 try:
-    model = genai.GenerativeModel(model_name="gemini-1.5-flash-latest", system_instruction=system_instruction)
+    model = genai.GenerativeModel(model_name="gemini-2.5-flash", system_instruction=system_instruction)
 except:
     model = genai.GenerativeModel(model_name="gemini-pro", system_instruction=system_instruction)
 

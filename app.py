@@ -33,7 +33,10 @@ TODAY_STR = date.today().strftime("%d.%m.%Y")
 CANDIDATE_PROFILE = f"""
 AD SOYAD: Semih ACAR
 DOĞUM: 21/07/2000, Ankara (Güncel Yaş: {CURRENT_AGE})
-EĞİTİM: Konya Teknik Üniversitesi - Elektrik Elektronik Mühendisliği
+EĞİTİM: Konya Teknik Üniversitesi - Elektrik Elektronik Mühendisliği 
+EĞİTİM2: Anadolu Üniversitesi - Uluslar Arası İlişkiler (2025-Devam Ediyor)
+Lise: Yahya Kemal Beyatlı Anadolu Lisesi
+GANO: 2,62
 DURUM: {EDU_STATUS}
 
 ÖZET VE LİDERLİK PROFİLİ:
@@ -41,18 +44,22 @@ Semih, {CURRENT_AGE} yaşında, teknik derinliğinin yanı sıra güçlü bir y�
 - Teknik Liderlik: Hem donanım hem yazılım ekipleriyle köprü kurabilir.
 - Kriz Yönetimi: Çözüm odaklıdır.
 - Finansal Bakış: Ekonomi ve blockchain ilgisi ile maliyet analizi yapabilir.
+- Şehir planlama gibi bir çok mühendislik alanında aktif rol oynamaktadır.
+- Remote, Hybrid çalışma metodlarına uyum sağlayabilir.
+- AFAD, Oy ve Ötesi gibi soysal derneklerde aktif üyedir.
 
 PROJELER:
 1. PLAY STORE UYGULAMASI (Mobil Yazılım):
-   - Kendi geliştirdiği mobil uygulamayı yayınlamıştır. (Ürün Yönetimi yetkinliği)
+   - Kendi geliştirdiği mobil uygulamayı yayınlamıştır. Proje ismi BrewLAB'dır. Gidip sizde deneyimleyebilirsiniz. Ayrıyetten kendisi şuan farklı bir uygulama üzerinde de çalışmaktadır. (Ürün Yönetimi yetkinliği)
 2. Kapalı Çevrim Motor Kontrolü (Gömülü Sistemler):
    - STM32 ve Python (PyQt).
 3. Çizgi İzleyen Robot (Otonom):
-   - Raspberry Pi ve Linux.
+   - Raspberry Pi ve Linux.   
 
 TEKNİK YETENEKLER:
 - Diller: Python (İleri), C, C++, MATLAB.
 - Platformlar: STM32, Arduino, Proteus, Linux.
+- Yabancı Dil: İngilizce (B1), BTK belgeleri mevcuttur.
 """
 
 # ---------------------------------------------------------
@@ -145,6 +152,7 @@ with st.sidebar:
     st.write("---")
     # Dinamik bilgileri Sidebar'da da gösterelim
     st.info(f"Teknik uzmanlığın ötesinde, stratejik karar alma ve ekip yönetimi konularında yetkin, vizyoner bir mühendis.")
+    st.markdown(" İLETİŞİM ")
     st.markdown("📧 [E-Posta Gönder](mailto:semihacar006@gmail.com)")
     st.markdown("🔗 [LinkedIn](http://linkedin.com/in/semih-acar-0606-sa)")
 
@@ -154,7 +162,9 @@ with st.sidebar:
 system_instruction = f"""
 Sen Semih ACAR'ı temsil eden profesyonel bir AI asistanısın.
 TARİH: {TODAY_STR}. ADAY PROFİLİ: {CANDIDATE_PROFILE}
-Kurallar: Yönetici potansiyelini vurgula. Maaş sorulursa direkt rakam verme, "35.000 TL üzeri rekabetçi paket" de. Play Store uygulamasından bahset.
+Kurallar: 
+- Yönetici potansiyelini vurgula. Maaş sorulursa direkt rakam verme, "35.000 TL üzeri rekabetçi paket" de. Play Store uygulamasından bahset.
+- Hiç bir zaman net bir hayır verme, bir şeyi yapamayacağımı düşündürtme. Net olarak bildiğin şeylere hayır diyebilirsin.
 """
 
 try:
@@ -165,7 +175,7 @@ except:
 st.markdown("<h2 style='text-align: center;'>Semih ACAR | Dijital Mülakat Asistanı</h2>", unsafe_allow_html=True)
 
 if "messages" not in st.session_state:
-    st.session_state.messages = [{"role": "assistant", "content": f"Merhaba! Ben Semih ACAR. Şu an {CURRENT_AGE} yaşındayım. Kariyerim hakkında ne bilmek istersiniz?"}]
+    st.session_state.messages = [{"role": "assistant", "content": f"Merhaba! Ben Semih ACAR. Kariyerim hakkında ne bilmek istersiniz?"}]
     st.session_state.chat_session = model.start_chat(history=[])
 
 for message in st.session_state.messages:

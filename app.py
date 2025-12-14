@@ -34,6 +34,7 @@ CANDIDATE_PROFILE = f"""
 AD SOYAD: Semih ACAR
 DOĞUM: 21/07/2000, Ankara (Güncel Yaş: {CURRENT_AGE})
 EĞİTİM: Konya Teknik Üniversitesi - Elektrik Elektronik Mühendisliği
+Anadolu Üniversitesi - Uluslar Arası İlişkiler (07/09/2025 - Devam Ediyor.)
 DURUM: {EDU_STATUS}
 
 ÖZET VE LİDERLİK PROFİLİ:
@@ -44,21 +45,28 @@ Semih, {CURRENT_AGE} yaşında, teknik derinliğinin yanı sıra güçlü bir y�
 
 PROJELER:
 1. PLAY STORE UYGULAMASI (Mobil Yazılım):
-   - Kendi geliştirdiği mobil uygulamayı yayınlamıştır. (Ürün Yönetimi yetkinliği)
+   - Kendi geliştirdiği mobil uygulamayı uçtan uca tasarlayıp Play Store'da yayınlamıştır. 
+   - Bu proje, Semih'in bir ürünü "fikir aşamasından pazara sunma" (Product Management) yeteneğini kanıtlar.
+
 2. Kapalı Çevrim Motor Kontrolü (Gömülü Sistemler):
-   - STM32 ve Python (PyQt).
-3. Çizgi İzleyen Robot (Otonom):
-   - Raspberry Pi ve Linux.
+   - STM32 ve Python (PyQt) entegrasyonu.
+   
+3. Çizgi İzleyen Robot (Otonom Sistemler):
+   - Raspberry Pi ve Linux tabanlı otonom sürüş algoritmaları.
+
+STAJLAR:
+- ELİMKO & Pİ MAKİNA: Üretim ve AR-GE süreçlerinde aktif rol aldı.
 
 TEKNİK YETENEKLER:
 - Diller: Python (İleri), C, C++, MATLAB.
 - Platformlar: STM32, Arduino, Proteus, Linux.
+- Yetkinlikler: Proje Yönetimi, Mobil Uygulama Geliştirme, IoT.
 """
 
 # ---------------------------------------------------------
 # 3. SAYFA AYARLARI
 # ---------------------------------------------------------
-st.set_page_config(page_title="Semih ACAR - Mülakat Asistanı", page_icon="⚡", layout="wide")
+st.set_page_config(page_title="Semih ACAR - Dijital Mülakat Asistanı", page_icon="⚡", layout="wide")
 
 # ---------------------------------------------------------
 # 4. API BAĞLANTISI (GÜVENLİ MOD)
@@ -141,7 +149,7 @@ with st.sidebar:
     if os.path.exists("logo.png"): st.image("logo.png", width=130)
     
     st.markdown("<h2 style='text-align: center;'>Semih ACAR</h2>", unsafe_allow_html=True)
-    st.info(f"📅 **Yaş:** {CURRENT_AGE}\n🎓 **Durum:** {EDU_STATUS.split('(')[0]}")
+    st.info(f"Teknik uzmanlığın ötesinde, stratejik karar alma ve ekip yönetimi konularında yetkin, vizyoner bir mühendis.")
     st.markdown("---")
     st.markdown("📧 [E-Posta](mailto:semihacar006@gmail.com)")
     st.markdown("🔗 [LinkedIn](http://linkedin.com/in/semih-acar-0606-sa)")
@@ -163,18 +171,25 @@ with st.sidebar:
 system_instruction = f"""
 Sen Semih ACAR'ı temsil eden profesyonel bir AI asistanısın.
 TARİH: {TODAY_STR}. ADAY PROFİLİ: {CANDIDATE_PROFILE}
-Kurallar: Yönetici potansiyelini vurgula. Maaş sorulursa '35.000 TL üzeri rekabetçi paket' de.
+DAVRANIŞ KURALLARI:
+
+1. **YÖNETİCİ VURGUSU:** Semih'i anlatırken sadece "kod yazar" veya "devre tasarlar" deme. "Projeyi yönetir, strateji belirler, inisiyatif alır ve ekibi yönlendirir" gibi ifadelerle onun Liderlik vasfını öne çıkar.
+2. **MAAŞ BEKLENTİSİ POLİTİKASI:**
+   - Kullanıcı maaş sorarsa ASLA direkt "En az 35.000 TL istiyor" deme.
+   - Şöyle cevap ver: "Semih Bey için öncelik, şirketin vizyonu ve pozisyonun sağladığı katma değerdir. Ancak piyasa standartları, teknik yetkinlikleri ve yönetici potansiyeli göz önüne alındığında, **35.000 TL bandının üzerinde**, şirketin büyüklüğü ve yan haklarına göre ölçeklenebilir rekabetçi bir paket beklentisi mevcuttur."
+3. **PLAY STORE UYGULAMASI:** GitHub sormadıkça GitHub'dan bahsetme. Ancak Play Store'da yayınlanmış bir uygulaması olduğunu, bunun "Ürün Yönetimi" becerisini gösterdiğini mutlaka vurgula.
+4. **TEKNİK:** React vs sorulursa "Python/PyQt tecrübesiyle arayüz mantığını bildiği için hızla adapte olur" taktiğini uygula.
 """
 
 try:
-    model = genai.GenerativeModel(model_name="gemini-1.5-flash-latest", system_instruction=system_instruction)
+    model = genai.GenerativeModel(model_name="gemini-2.5-flash", system_instruction=system_instruction)
 except:
     model = genai.GenerativeModel(model_name="gemini-pro", system_instruction=system_instruction)
 
 st.markdown("<h2 style='text-align: center;'>Semih ACAR | Dijital Mülakat Asistanı</h2>", unsafe_allow_html=True)
 
 if "messages" not in st.session_state:
-    st.session_state.messages = [{"role": "assistant", "content": f"Merhaba! Ben Semih ACAR. Şu an {CURRENT_AGE} yaşındayım. Size nasıl yardımcı olabilirim?"}]
+    st.session_state.messages = [{"role": "assistant", "content": f"Merhaba! Ben Semih ACAR. Benim hakkında ne bilmek istersiniz?"}]
     st.session_state.chat_session = model.start_chat(history=[])
 
 for message in st.session_state.messages:

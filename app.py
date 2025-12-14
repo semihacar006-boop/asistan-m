@@ -33,10 +33,7 @@ TODAY_STR = date.today().strftime("%d.%m.%Y")
 CANDIDATE_PROFILE = f"""
 AD SOYAD: Semih ACAR
 DOĞUM: 21/07/2000, Ankara (Güncel Yaş: {CURRENT_AGE})
-EĞİTİM: Konya Teknik Üniversitesi - Elektrik Elektronik Mühendisliği 
-EĞİTİM2: Anadolu Üniversitesi - Uluslar Arası İlişkiler (2025-Devam Ediyor)
-Lise: Yahya Kemal Beyatlı Anadolu Lisesi
-GANO: 2,62
+EĞİTİM: Konya Teknik Üniversitesi - Elektrik Elektronik Mühendisliği
 DURUM: {EDU_STATUS}
 
 ÖZET VE LİDERLİK PROFİLİ:
@@ -44,66 +41,65 @@ Semih, {CURRENT_AGE} yaşında, teknik derinliğinin yanı sıra güçlü bir y�
 - Teknik Liderlik: Hem donanım hem yazılım ekipleriyle köprü kurabilir.
 - Kriz Yönetimi: Çözüm odaklıdır.
 - Finansal Bakış: Ekonomi ve blockchain ilgisi ile maliyet analizi yapabilir.
-- Şehir planlama gibi bir çok mühendislik alanında aktif rol oynamaktadır.
-- Remote, Hybrid çalışma metodlarına uyum sağlayabilir.
-- AFAD, Oy ve Ötesi gibi soysal derneklerde aktif üyedir.
 
 PROJELER:
 1. PLAY STORE UYGULAMASI (Mobil Yazılım):
-   - Kendi geliştirdiği mobil uygulamayı yayınlamıştır. Proje ismi BrewLAB'dır. Gidip sizde deneyimleyebilirsiniz. Ayrıyetten kendisi şuan farklı bir uygulama üzerinde de çalışmaktadır. (Ürün Yönetimi yetkinliği)
+   - Kendi geliştirdiği mobil uygulamayı yayınlamıştır. (Ürün Yönetimi yetkinliği)
 2. Kapalı Çevrim Motor Kontrolü (Gömülü Sistemler):
    - STM32 ve Python (PyQt).
 3. Çizgi İzleyen Robot (Otonom):
-   - Raspberry Pi ve Linux.   
+   - Raspberry Pi ve Linux.
 
 TEKNİK YETENEKLER:
 - Diller: Python (İleri), C, C++, MATLAB.
 - Platformlar: STM32, Arduino, Proteus, Linux.
-- Yabancı Dil: İngilizce (B1), BTK belgeleri mevcuttur.
 """
 
 # ---------------------------------------------------------
 # 3. SAYFA AYARLARI
 # ---------------------------------------------------------
-st.set_page_config(
-    page_title="Semih ACAR - Mülakat Asistanı",
-    page_icon="⚡", 
-    layout="wide",
-    initial_sidebar_state="expanded"
-)
+st.set_page_config(page_title="Semih ACAR - Mülakat Asistanı", page_icon="⚡", layout="wide")
 
 # ---------------------------------------------------------
-# 4. API BAĞLANTISI (CLOUD UYUMLU GÜNCELLEME)
+# 4. API BAĞLANTISI (GÜVENLİ MOD)
 # ---------------------------------------------------------
 try:
-    # Önce Streamlit Cloud şifrelerine bakar (En güvenli yöntem)
     if "GOOGLE_API_KEY" in st.secrets:
         genai.configure(api_key=st.secrets["GOOGLE_API_KEY"])
-    # Bulamazsa yerel dosyaya bakar (Bilgisayarında çalışırken)
     else:
-        secrets = toml.load(".streamlit/secrets.toml")
-        genai.configure(api_key=secrets["GOOGLE_API_KEY"])
+        # Localde çalışırken hata vermemesi için
+        try:
+            secrets = toml.load(".streamlit/secrets.toml")
+            genai.configure(api_key=secrets["GOOGLE_API_KEY"])
+        except:
+            st.warning("API Anahtarı bulunamadı. Sohbet çalışmayabilir.")
 except Exception as e:
-    st.error(f"⚠️ API Anahtarı Hatası: {e}")
-    st.stop()
+    st.error(f"API Hatası: {e}")
 
 # ---------------------------------------------------------
-# 5. LOGLAMA SİSTEMİ
+# 5. GÜÇLENDİRİLMİŞ LOGLAMA SİSTEMİ
 # ---------------------------------------------------------
 LOG_FILE = "ziyaretci_loglari.xlsx"
 
 def save_visitor_info(name, company, position):
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    new_data = {"Tarih": [now], "Ad Soyad": [name], "Şirket": [company], "Pozisyon": [position]}
-    df_new = pd.DataFrame(new_data)
+    new_data = pd.DataFrame({
+        "Tarih": [now], 
+        "Ad Soyad": [name], 
+        "Şirket": [company], 
+        "Pozisyon": [position]
+    })
+    
     try:
+        # Dosya varsa üzerine ekle, yoksa yeni oluştur
         if os.path.exists(LOG_FILE):
-            df_old = pd.read_excel(LOG_FILE)
-            pd.concat([df_old, df_new], ignore_index=True).to_excel(LOG_FILE, index=False)
+            df_old = pd.read_excel(LOG_FILE, engine="openpyxl")
+            df_final = pd.concat([df_old, new_data], ignore_index=True)
+            df_final.to_excel(LOG_FILE, index=False, engine="openpyxl")
         else:
-            df_new.to_excel(LOG_FILE, index=False)
-    except:
-        pass # Hata olursa devam et
+            new_data.to_excel(LOG_FILE, index=False, engine="openpyxl")
+    except Exception as e:
+        st.error(f"Kayıt Hatası: {e}")
 
 if "visitor_submitted" not in st.session_state:
     st.session_state.visitor_submitted = False
@@ -112,23 +108,25 @@ if "visitor_submitted" not in st.session_state:
 if not st.session_state.visitor_submitted:
     st.markdown("<h1 style='text-align: center;'>Hoş Geldiniz</h1>", unsafe_allow_html=True)
     st.markdown("<p style='text-align: center;'>Semih ACAR'ın Dijital Asistanı</p>", unsafe_allow_html=True)
+    
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
         with st.form("visitor_form"):
             v_name = st.text_input("Adınız Soyadınız")
             v_company = st.text_input("Şirket Adı")
             v_position = st.text_input("Pozisyonunuz")
+            
             if st.form_submit_button("Sohbete Başla", type="primary"):
                 if v_name and v_company:
                     save_visitor_info(v_name, v_company, v_position)
                     st.session_state.visitor_submitted = True
                     st.rerun()
                 else:
-                    st.warning("Lütfen Ad ve Şirket alanlarını doldurunuz.")
+                    st.warning("Lütfen Ad ve Şirket bilgilerini giriniz.")
     st.stop()
 
 # ---------------------------------------------------------
-# 6. TASARIM VE SIDEBAR
+# 6. SIDEBAR VE LOG İNDİRME (ADMİN PANELİ)
 # ---------------------------------------------------------
 st.markdown("""
 <style>
@@ -140,42 +138,43 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 with st.sidebar:
-    col_l, col_m, col_r = st.columns([1, 2, 1])
-    with col_m:
-        if os.path.exists("logo.png"): st.image("logo.png", width=130)
-        elif os.path.exists("unnamed.jpg"): st.image("unnamed.jpg", width=130)
+    if os.path.exists("logo.png"): st.image("logo.png", width=130)
     
     st.markdown("<h2 style='text-align: center;'>Semih ACAR</h2>", unsafe_allow_html=True)
-    st.markdown("<div class='profile-title'>Semih ACAR</div>", unsafe_allow_html=True)
-    st.markdown("<div class='profile-subtitle'>Elektrik-Elektronik Mühendisi<br>& Yazılım Geliştirici</div>", unsafe_allow_html=True)
-    
-    st.write("---")
-    # Dinamik bilgileri Sidebar'da da gösterelim
-    st.info(f"Teknik uzmanlığın ötesinde, stratejik karar alma ve ekip yönetimi konularında yetkin, vizyoner bir mühendis.")
-    st.markdown(" İLETİŞİM ")
-    st.markdown("📧 [E-Posta Gönder](mailto:semihacar006@gmail.com)")
+    st.info(f"📅 **Yaş:** {CURRENT_AGE}\n🎓 **Durum:** {EDU_STATUS.split('(')[0]}")
+    st.markdown("---")
+    st.markdown("📧 [E-Posta](mailto:semihacar006@gmail.com)")
     st.markdown("🔗 [LinkedIn](http://linkedin.com/in/semih-acar-0606-sa)")
+    
+    # --- GİZLİ LOG İNDİRME BÖLÜMÜ ---
+    st.markdown("---")
+    with st.expander("🔐 Yönetici Girişi"):
+        admin_pass = st.text_input("Şifre", type="password")
+        if admin_pass == "semih123": # Burayı istersen değiştirebilirsin
+            if os.path.exists(LOG_FILE):
+                with open(LOG_FILE, "rb") as f:
+                    st.download_button("📥 Ziyaretçi Listesini İndir", f, file_name="ziyaretciler.xlsx")
+            else:
+                st.write("Henüz kayıt yok.")
 
 # ---------------------------------------------------------
-# 7. YAPAY ZEKA MODELİ VE SOHBET
+# 7. SOHBET SİSTEMİ
 # ---------------------------------------------------------
 system_instruction = f"""
 Sen Semih ACAR'ı temsil eden profesyonel bir AI asistanısın.
 TARİH: {TODAY_STR}. ADAY PROFİLİ: {CANDIDATE_PROFILE}
-Kurallar: 
-- Yönetici potansiyelini vurgula. Maaş sorulursa direkt rakam verme, "35.000 TL üzeri rekabetçi paket" de. Play Store uygulamasından bahset.
-- Hiç bir zaman net bir hayır verme, bir şeyi yapamayacağımı düşündürtme. Net olarak bildiğin şeylere hayır diyebilirsin.
+Kurallar: Yönetici potansiyelini vurgula. Maaş sorulursa '35.000 TL üzeri rekabetçi paket' de.
 """
 
 try:
-    model = genai.GenerativeModel(model_name="gemini-2.5-flash", system_instruction=system_instruction)
+    model = genai.GenerativeModel(model_name="gemini-1.5-flash-latest", system_instruction=system_instruction)
 except:
     model = genai.GenerativeModel(model_name="gemini-pro", system_instruction=system_instruction)
 
 st.markdown("<h2 style='text-align: center;'>Semih ACAR | Dijital Mülakat Asistanı</h2>", unsafe_allow_html=True)
 
 if "messages" not in st.session_state:
-    st.session_state.messages = [{"role": "assistant", "content": f"Merhaba! Ben Semih ACAR. Kariyerim hakkında ne bilmek istersiniz?"}]
+    st.session_state.messages = [{"role": "assistant", "content": f"Merhaba! Ben Semih ACAR. Şu an {CURRENT_AGE} yaşındayım. Size nasıl yardımcı olabilirim?"}]
     st.session_state.chat_session = model.start_chat(history=[])
 
 for message in st.session_state.messages:
@@ -189,8 +188,8 @@ if prompt := st.chat_input("Sorunuzu buraya yazın..."):
     st.session_state.messages.append({"role": "user", "content": prompt})
 
     with st.chat_message("assistant", avatar="⚡"):
-        message_placeholder = st.empty()
         try:
+            message_placeholder = st.empty()
             full_response = ""
             for chunk in st.session_state.chat_session.send_message(prompt, stream=True):
                 full_response += chunk.text
@@ -198,5 +197,4 @@ if prompt := st.chat_input("Sorunuzu buraya yazın..."):
             message_placeholder.markdown(full_response)
             st.session_state.messages.append({"role": "assistant", "content": full_response})
         except Exception as e:
-            # İŞTE BURASI HATANIN GERÇEK SEBEBİNİ GÖSTERECEK
-            st.error(f"Bir hata oluştu: {e}")
+            st.error(f"Hata: {e}")
